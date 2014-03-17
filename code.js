@@ -15,8 +15,10 @@ var firekey = 32;	// spacebar
 
 var ltime;		// Keep track of time between current and last tick
 
-var tempx=100;		// temp x&y vars of moving box
-var tempy=100;
+var fps = 40;		// frames per second
+
+var raptor;		// object to hold data for raptor
+var enemy;		// enemy 
 
 
 
@@ -41,6 +43,25 @@ $(document).ready(function()
 	{
 		keydown[e.keyCode] = false;
 	});
+
+	// Initialize ship
+	raptor = new Object();
+	raptor.width = 15;
+	raptor.height = 20;
+	raptor.x = 200;
+	raptor.y = 250;
+	// Velocities going forward, backwards, sideways
+	raptor.forwardvel = 70/fps;	// Numerator represents speed in pixels per second
+	raptor.sidevel = 60/fps;
+	raptor.backvel = 35/fps;
+
+	// Enemy
+	enemy = new Object();
+	enemy.width = 25;
+	enemy.height = 40;
+	enemy.x = 300;
+	enemy.y = 150;
+
 	
 
 	// Begin endless delayed loop
@@ -49,48 +70,74 @@ $(document).ready(function()
 });
 
 
-// This function is executed once every 30 ms
+// This function is executed "fps" times per second
 function tick()
 {
+	// Set timer for next tick
+	setTimeout(tick,1000/fps);
+
     updateRaptor();
+
+ 	// Check for collision between raptor and enemy
+	if(collision(raptor,enemy))
+	{
+		enemy.x = Math.random()*(width-enemy.width);
+		enemy.y = Math.random()*(height-enemy.height);
+	}
 
 	// Clear the canvas
 	ctx.clearRect(0,0,width,height);
 
 	// Draw the box, with the topleft corner at coordinates (tempx,tempy)
 	ctx.fillStyle="#000000";
-	ctx.fillRect(tempx,tempy,20,20);
+	ctx.fillRect(raptor.x,raptor.y,raptor.width,raptor.height);
+
+	ctx.fillStyle="#ff0000";
+	ctx.fillRect(enemy.x,enemy.y,enemy.width,enemy.height);
 
 
 
+}
 
-	// Calculate time left until next tick, set timer
-	var time = (new Date()).getTime();
-	dtime = time - ltime;
-	ltime = time;
-	setTimeout(tick,30-dtime);
+function collision(a,b)
+{
+	if(a.x+a.width>b.x)
+	{
+		if(b.x+b.width>a.x)
+		{
+			if(a.y+a.height>b.y)
+			{
+				if(b.y+b.height>a.y)
+				{
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 function updateRaptor() {
     // Alter tempx/tempy if certain keys pressed
     if(keydown[rightkey])
     {
-        tempx += 1;
+        raptor.x += raptor.sidevel;
     }
 
     if(keydown[leftkey])
     {
-        tempx -= 1;
+        raptor.x -= raptor.sidevel;
     }
 
     if(keydown[upkey])
     {
-        tempy -= 1;
+        raptor.y -= raptor.forwardvel;
     }
 
     if(keydown[downkey])
     {
-        tempy +=1;
+        raptor.y += raptor.backvel;
     }
 }
 
