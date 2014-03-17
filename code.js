@@ -52,12 +52,7 @@ $(document).ready(function()
 // This function is executed once every 30 ms
 function tick()
 {
-	
-	// Alter tempx/tempy if certain keys pressed
-	if(keydown[rightkey])
-	{
-		tempx+=1;
-	}
+    updateRaptor();
 
 	// Clear the canvas
 	ctx.clearRect(0,0,width,height);
@@ -76,4 +71,26 @@ function tick()
 	setTimeout(tick,30-dtime);
 }
 
+function updateRaptor() {
+    // Alter tempx/tempy if certain keys pressed
+    if(keydown[rightkey])
+    {
+        tempx += 1;
+    }
+
+    if(keydown[leftkey])
+    {
+        tempx -= 1;
+    }
+
+    if(keydown[upkey])
+    {
+        tempy -= 1;
+    }
+
+    if(keydown[downkey])
+    {
+        tempy +=1;
+    }
+}
 
